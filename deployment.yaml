@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccdd-test-deployment
+  namespace: ccdd-test-namespace
+  labels:
+    app: ccdd-test-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ccdd-test-app
+  template:
+    metadata:
+      labels:
+        app: ccdd-test-app
+    spec:
+      containers:
+      - name: ccdd-dummy-container
+        image: mkubica/ccdd-dummy-container
+        ports:
+        - containerPort: 80
