@@ -1,0 +1,17 @@
+# aws-auth-configmap.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapUsers: |
+    - userarn: arn:aws:iam::746685032964:user/eks-admin-mateusz
+      username: eks-admin-mateusz
+      groups: 
+      - eks-admin-group
+    - userarn: arn:aws:iam::746685032964:user/eks-admin-simonas
+      username: eks-admin-simonas
+      groups: 
+      - eks-admin-group
