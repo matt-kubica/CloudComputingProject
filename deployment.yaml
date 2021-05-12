@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ccdd-test-deployment
-  namespace: ccdd-test-namespace
+  name: ccds-test-deployment
+  namespace: ccds-test-namespace
   labels:
-    app: ccdd-test-app
+    app: ccds-test-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: ccdd-test-app
+      app: ccds-test-app
   template:
     metadata:
       labels:
-        app: ccdd-test-app
+        app: ccds-test-app
     spec:
       containers:
-      - name: ccdd-dummy-container
-        image: mkubica/ccdd-dummy-container
+      - name: ccds-dummy-container
+        image: mkubica/ccds-dummy-container
         ports:
         - containerPort: 80

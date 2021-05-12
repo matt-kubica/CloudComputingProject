@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ccdd-test-service
-  namespace: ccdd-test-namespace
+  name: ccds-test-service
+  namespace: ccds-test-namespace
   labels:
-    app: ccdd-test-app
+    app: ccds-test-app
 spec:
   type: LoadBalancer
   selector:
-    app: ccdd-test-app
+    app: ccds-test-app
   ports:
     - protocol: TCP
       port: 80
