@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
+  # specify concrete name
+  StackName:
+    Type: String
+    Default: ${AWS::StackName}
   # specify amount of AZs
   NumberOfAZs:
     Type: Number
@@ -36,7 +40,7 @@ Resources:
       EnableDnsHostnames: true
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-vpc
+        Value: !Sub ${StackName}
 
 
   # define internet gateway
@@ -46,7 +50,7 @@ Resources:
     Properties:
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-internet-gateway
+        Value: !Sub ${StackName}-internet-gateway
 
   # bind gateway with vpc
   AttachGateway:
@@ -62,21 +66,23 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
+      MapPublicIpOnLaunch: True
       CidrBlock: 10.10.10.0/24
       AvailabilityZone: !Select [ 0, !GetAZs ]    
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-public-subnet-A
+        Value: !Sub ${StackName}-public-subnet-A
 
   PublicSubnetB:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
+      MapPublicIpOnLaunch: True
       CidrBlock: 10.10.20.0/24
       AvailabilityZone: !Select [ 1, !GetAZs ]  
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-public-subnet-B
+        Value: !Sub ${StackName}-public-subnet-B
 
   # creation of this subnet depends of AZs amount
   PublicSubnetC:
@@ -84,11 +90,12 @@ Resources:
     Condition: BuildSubnetC
     Properties:
       VpcId: !Ref VPC
+      MapPublicIpOnLaunch: True
       CidrBlock: 10.10.30.0/24
       AvailabilityZone: !Select [ 2, !GetAZs ] 
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-public-subnet-C
+        Value: !Sub ${StackName}-public-subnet-C
 
   # private subnets only in case 'BuildPrivateSubnets' resource is set to true
   PrivateSubnetA:
@@ -100,7 +107,7 @@ Resources:
       AvailabilityZone: !Select [ 0, !GetAZs ]
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-private-subnet-A
+        Value: !Sub ${StackName}-private-subnet-A
 
   PrivateSubnetB:
     Type: AWS::EC2::Subnet
@@ -111,7 +118,7 @@ Resources:
       AvailabilityZone: !Select [ 1, !GetAZs ]
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-private-subnet-B
+        Value: !Sub ${StackName}-private-subnet-B
 
   # creation of this subnet depends of AZs amount as well as on 'BuildPrivateSubnets' param
   PrivateSubnetC:
@@ -123,7 +130,7 @@ Resources:
       AvailabilityZone: !Select [ 2, !GetAZs ]
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-private-subnet-C
+        Value: !Sub ${StackName}-private-subnet-C
 
 
   # define NAT gateway
@@ -135,7 +142,7 @@ Resources:
       SubnetId: !Ref PublicSubnetA
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-nat-gateway
+        Value: !Sub ${StackName}-nat-gateway
 
   # define EIP
   ElasticIPAddress:
@@ -145,7 +152,7 @@ Resources:
       Domain: vpc
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-elastic-ip
+        Value: !Sub ${StackName}-elastic-ip
 
 
   # define route tables
@@ -155,7 +162,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-public-route-table
+        Value: !Sub ${StackName}-public-route-table
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Condition: BuildPrivateSubnets
@@ -163,7 +170,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-private-route-table
+        Value: !Sub ${StackName}-private-route-table
 
   # define routes
   # 0.0.0.0/0 -> InternetGateway
@@ -225,4 +232,23 @@ Resources:
       SubnetId: !Ref PrivateSubnetC
       RouteTableId: !Ref PrivateRouteTable
 
+
+Outputs:
+
+  VpcId:
+    Value: !Ref VPC
+    Description: "Id of created VPC"
+  
+  PublicSubnetAId:
+    Value: !Ref PublicSubnetA
+    Description: "Id of created PublicSubnetA"
+
+  PublicSubnetBId:
+    Value: !Ref PublicSubnetB
+    Description: "Id of created PublicSubnetB"
+
+  PublicSubnetCId:
+    Condition: BuildSubnetC
+    Value: !Ref PublicSubnetC
+    Description: "Id of created PublicSubnetC"
 
