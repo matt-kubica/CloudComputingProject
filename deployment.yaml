@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
       - name: ccds-dummy-container
-        image: mkubica/ccds-dummy-container
+        image: mkubica/ccds-dummy-container:latest
         ports:
         - containerPort: 80
+        imagePullPolicy: Always
