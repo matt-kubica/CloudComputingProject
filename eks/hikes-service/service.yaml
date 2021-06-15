@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccds-hikes-deployment
+  labels:
+    app: ccds-test-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ccds-test-app
+  template:
+    metadata:
+      labels:
+        app: ccds-test-app
+    spec:
+      containers:
+      - name: ccds-hikes-container
+        image: mkubica/ccds-hikes-container:latest
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccds-hikes-service
+  labels:
+    app: ccds-test-app
+spec:
+  selector:
+    app: ccds-test-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

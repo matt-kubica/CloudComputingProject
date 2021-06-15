@@ -47,7 +47,7 @@ Resources:
         NumberOfAZs: 2
         BuildPrivateSubnets: False
         StackName: !Sub "${AWS::StackName}-vpc"
-      TemplateURL: "https://cf-templates-1apaeyme0v0mq-us-east-1.s3.amazonaws.com/vpc-provisioning.yaml"
+      TemplateURL: "https://cf-templates-1apaeyme0v0mq-us-east-1.s3.amazonaws.com/vpc.yaml"
 
 
   ControlPlaneRole:

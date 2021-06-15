@@ -6,7 +6,7 @@ set -e
 REGION=us-east-1						# any region
 NUM_WORKER_NODES=3 						# for now, value between 2 and 3
 WORKER_NODES_INSTANCE_TYPE=t2.micro 	# [t2.micro, t2.small, t3.medium]
-STACK_NAME=ccds-test-stack
+STACK_NAME=ccds-stack
 KEY_PAIR_NAME=ccds-test-stack-key-pair
 
 
@@ -18,7 +18,7 @@ NOC='\033[0m'
 echo -e "${COL}Setting up $STACK_NAME (may take up to 15 minutes)...${NOC}"
 aws cloudformation deploy \
   --region "$REGION" \
-  --template-file eks-provisioning.yaml \
+  --template-file provisioning/eks.yaml \
   --capabilities CAPABILITY_IAM \
   --stack-name "$STACK_NAME" \
   --parameter-overrides \
@@ -33,19 +33,25 @@ aws eks update-kubeconfig --region "$REGION" \
 
 
 echo -e "\n${COL}Adding administartors to cluster...${NOC}"
-kubectl apply -f rbac.yaml
-kubectl apply -f aws-auth-configmap.yaml
+kubectl apply -f provisioning/security/rbac.yaml
+kubectl apply -f provisioning/security/aws-auth-configmap.yaml
 
 
-echo -e "\n${COL}Creating EKS namespace...${NOC}"
-kubectl create namespace ccds-test-namespace
+echo -e "\n${COL}Deploying NLB...${NOC}"
+kubectl apply -f load-balancer/nginx-nlb.yaml
 
 
-echo -e "\n${COL}Deploying application...${NOC}"
-kubectl apply -f deployment.yaml
-kubectl expose deployment ccds-test-deployment \
-	-n ccds-test-namespace --type=LoadBalancer --name=ccds-test-service
+echo -e "\n${COL}Deploying services...${NOC}"
+kubectl apply -f hikes-service/service.yaml
+kubectl apply -f weather-service/service.yaml
 
 
+echo -e "\n${COL}Deploying ingress...${NOC}"
+# needs to be delayed a bit, otherwise ingress cannot be deployed because of some dependent fuckery
+sleep 60 
+kubectl apply -f load-balancer/ingress.yaml
+
+
+sleep 10
 echo -e "\n${COL}Listing services...${NOC}"
 kubectl get svc -A
