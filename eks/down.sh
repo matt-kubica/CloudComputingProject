@@ -3,7 +3,7 @@ set -e
 
 # parameters
 REGION=us-east-1
-STACK_NAME=ccds-stack
+STACK_NAME=$1
 
 # colors
 COL='\033[1;36m'

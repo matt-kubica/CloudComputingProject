@@ -3,11 +3,12 @@ set -e
 
 
 # parameters
+STACK_NAME=$1
 REGION=us-east-1						# any region
 NUM_WORKER_NODES=3 						# for now, value between 2 and 3
 WORKER_NODES_INSTANCE_TYPE=t2.micro 	# [t2.micro, t2.small, t3.medium]
-STACK_NAME=ccds-stack
 KEY_PAIR_NAME=ccds-test-stack-key-pair
+WORKER_NODES_DISK_SIZE=15
 
 
 # colors
@@ -24,7 +25,8 @@ aws cloudformation deploy \
   --parameter-overrides \
       KeyPairName="$KEY_PAIR_NAME" \
       NumWorkerNodes="$NUM_WORKER_NODES" \
-      WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE"
+      WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE" \
+      WorkerNodesDiskSize="$WORKER_NODES_DISK_SIZE"
 
 
 echo -e "\n${COL}Updating kubeconfig file...${NOC}"
