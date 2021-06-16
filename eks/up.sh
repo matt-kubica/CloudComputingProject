@@ -39,6 +39,10 @@ kubectl apply -f provisioning/security/aws-auth-configmap.yaml
 
 echo -e "\n${COL}Deploying NLB...${NOC}"
 kubectl apply -f load-balancer/nginx-nlb.yaml
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=120s
 
 
 echo -e "\n${COL}Deploying services...${NOC}"
@@ -47,8 +51,6 @@ kubectl apply -f weather-service/service.yaml
 
 
 echo -e "\n${COL}Deploying ingress...${NOC}"
-# needs to be delayed a bit, otherwise ingress cannot be deployed because of some dependent fuckery
-sleep 60 
 kubectl apply -f load-balancer/ingress.yaml
 
 
