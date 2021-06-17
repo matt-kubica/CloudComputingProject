@@ -27,6 +27,8 @@ kubectl delete -f hikes-service/service.yaml
 echo -e "${COL}Deleting prometheus...${NOC}"
 kubectl delete -f monitoring/
 kubectl delete -f monitoring/kube-state-metrics/
+kubectl delete -f monitoring/kube-node-exporter/
+kubectl delete -f monitoring/kube-grafana/
 
 
 echo -e "${COL}Deleting NLB...${NOC}"

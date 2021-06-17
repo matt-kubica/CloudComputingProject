@@ -13,8 +13,12 @@ spec:
       paths:
         - path: 
           backend:
-            serviceName: prometheus-service
-            servicePort: 9090
+            serviceName: grafana
+            servicePort: 3000        
+        # - path: 
+        #   backend:
+        #     serviceName: prometheus-service
+        #     servicePort: 9090
         - path: /hikes
           backend:
             serviceName: ccds-hikes-service

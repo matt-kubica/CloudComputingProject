@@ -5,7 +5,7 @@ set -e
 # parameters
 STACK_NAME=$1
 REGION=us-east-1						           # any region
-NUM_WORKER_NODES=8 						         # for now, value between 2 and 3
+NUM_WORKER_NODES=16 						         
 WORKER_NODES_INSTANCE_TYPE=t2.micro 	 # [t2.micro, t2.small, t3.medium]
 KEY_PAIR_NAME=ccds-test-stack-key-pair
 WORKER_NODES_DISK_SIZE=10
@@ -59,6 +59,8 @@ kubectl apply -f load-balancer/ingress.yaml
 echo -e "${COL}Deploying prometheus...${NOC}"
 kubectl apply -f monitoring/
 kubectl apply -f monitoring/kube-state-metrics/
+kubectl apply -f monitoring/kube-node-exporter/
+kubectl apply -f monitoring/kube-grafana/
 
 
 sleep 10
