@@ -24,6 +24,11 @@ kubectl delete -f weather-service/service.yaml
 kubectl delete -f hikes-service/service.yaml
 
 
+echo -e "${COL}Deleting prometheus...${NOC}"
+kubectl delete -f monitoring/
+kubectl delete -f monitoring/kube-state-metrics/
+
+
 echo -e "${COL}Deleting NLB...${NOC}"
 kubectl delete -f load-balancer/nginx-nlb.yaml
 

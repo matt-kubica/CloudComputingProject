@@ -7,6 +7,11 @@ Parameters:
     AllowedValues:
     - 2
     - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
     Description: "Number of worker nodes to create"
     Default: 2
 

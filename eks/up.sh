@@ -4,11 +4,11 @@ set -e
 
 # parameters
 STACK_NAME=$1
-REGION=us-east-1						# any region
-NUM_WORKER_NODES=3 						# for now, value between 2 and 3
-WORKER_NODES_INSTANCE_TYPE=t2.micro 	# [t2.micro, t2.small, t3.medium]
+REGION=us-east-1						           # any region
+NUM_WORKER_NODES=8 						         # for now, value between 2 and 3
+WORKER_NODES_INSTANCE_TYPE=t2.micro 	 # [t2.micro, t2.small, t3.medium]
 KEY_PAIR_NAME=ccds-test-stack-key-pair
-WORKER_NODES_DISK_SIZE=15
+WORKER_NODES_DISK_SIZE=10
 
 
 # colors
@@ -16,7 +16,7 @@ COL='\033[1;36m'
 NOC='\033[0m'
 
 
-echo -e "${COL}Setting up $STACK_NAME (may take up to 15 minutes)...${NOC}"
+echo -e "\n${COL}Setting up $STACK_NAME (may take up to 15 minutes)...${NOC}"
 aws cloudformation deploy \
   --region "$REGION" \
   --template-file provisioning/eks.yaml \
@@ -29,17 +29,17 @@ aws cloudformation deploy \
       WorkerNodesDiskSize="$WORKER_NODES_DISK_SIZE"
 
 
-echo -e "\n${COL}Updating kubeconfig file...${NOC}"
+echo -e "${COL}Updating kubeconfig file...${NOC}"
 aws eks update-kubeconfig --region "$REGION" \
 	--name "$STACK_NAME"-eks-cluster
 
 
-echo -e "\n${COL}Adding administartors to cluster...${NOC}"
+echo -e "${COL}Adding administartors to cluster...${NOC}"
 kubectl apply -f provisioning/security/rbac.yaml
 kubectl apply -f provisioning/security/aws-auth-configmap.yaml
 
 
-echo -e "\n${COL}Deploying NLB...${NOC}"
+echo -e "${COL}Deploying NLB...${NOC}"
 kubectl apply -f load-balancer/nginx-nlb.yaml
 kubectl wait --namespace ingress-nginx \
   --for=condition=ready pod \
@@ -47,13 +47,18 @@ kubectl wait --namespace ingress-nginx \
   --timeout=120s
 
 
-echo -e "\n${COL}Deploying services...${NOC}"
+echo -e "${COL}Deploying dummy services...${NOC}"
 kubectl apply -f hikes-service/service.yaml
 kubectl apply -f weather-service/service.yaml
 
 
-echo -e "\n${COL}Deploying ingress...${NOC}"
+echo -e "${COL}Deploying ingress...${NOC}"
 kubectl apply -f load-balancer/ingress.yaml
+
+
+echo -e "${COL}Deploying prometheus...${NOC}"
+kubectl apply -f monitoring/
+kubectl apply -f monitoring/kube-state-metrics/
 
 
 sleep 10
